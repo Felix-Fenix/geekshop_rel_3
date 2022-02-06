@@ -43,7 +43,7 @@ def register(request):
     content = {"title": title, "register_form": register_form}
     return render(request, "authnapp/register.html", content)
 
-    
+
 def edit(request):
     title = "редактирование"
 
