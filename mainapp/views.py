@@ -1,6 +1,8 @@
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
+
+from basketapp.models import Basket
 
 from .models import Contact, Product, ProductCategory
 
@@ -17,12 +19,48 @@ def main(request):
 def products(request, pk=None):
     title = "продукты"
     links_menu = ProductCategory.objects.all()
+
+    basket = []
+    if request.user.is_authenticated:
+        # basket1 = Basket.objects.filter(user=request.user)
+        basket_count = Basket.objects.filter(user=request.user).all()
+        b1 = basket_count.filter(quantity__gt=0)
+        queryset = Basket.objects.all()
+        summ = sum([p.quantity for p in queryset])
+        end_sum_list = []
+        for i in queryset:
+            d = Product.objects.get(id=i.product_id)
+            pr = d.price
+            end_sum_list.append(pr * i.quantity)
+        basket.append(sum(end_sum_list))
+        # or you can use this
+        # _basket = request.user.basket.all()
+        # print(f'basket / _basket: {len(_basket)} / {len(basket)}')
+
+    if pk is not None:
+        if pk == 0:
+            products = Product.objects.all().order_by("price")
+            category = {"name": "все"}
+        else:
+            category = get_object_or_404(ProductCategory, pk=pk)
+            products = Product.objects.filter(category__pk=pk).order_by("price")
+        content = {
+            "title": title,
+            "links_menu": links_menu,
+            "category": category,
+            "products": products,
+            "media_url": settings.MEDIA_URL,
+            "basket": basket[0],
+        }
+        return render(request, "mainapp/products_list.html", content)
     same_products = Product.objects.all()
     content = {
         "title": title,
         "links_menu": links_menu,
         "same_products": same_products,
         "media_url": settings.MEDIA_URL,
+        "same_products": same_products,
+        "basket": basket[0],
     }
     if pk:
         print(f"User select category: {pk}")
