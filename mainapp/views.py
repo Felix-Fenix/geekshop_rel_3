@@ -22,17 +22,8 @@ def products(request, pk=None):
 
     basket = []
     if request.user.is_authenticated:
-        # basket1 = Basket.objects.filter(user=request.user)
-        basket_count = Basket.objects.filter(user=request.user).all()
-        b1 = basket_count.filter(quantity__gt=0)
-        queryset = Basket.objects.all()
-        summ = sum([p.quantity for p in queryset])
-        end_sum_list = []
-        for i in queryset:
-            d = Product.objects.get(id=i.product_id)
-            pr = d.price
-            end_sum_list.append(pr * i.quantity)
-        basket.append(sum(end_sum_list))
+        basket = Basket.objects.filter(user=request.user)
+       
         # or you can use this
         # _basket = request.user.basket.all()
         # print(f'basket / _basket: {len(_basket)} / {len(basket)}')
@@ -50,7 +41,7 @@ def products(request, pk=None):
             "category": category,
             "products": products,
             "media_url": settings.MEDIA_URL,
-            "basket": basket[0],
+            "basket": basket,
         }
         return render(request, "mainapp/products_list.html", content)
     same_products = Product.objects.all()
@@ -60,7 +51,7 @@ def products(request, pk=None):
         "same_products": same_products,
         "media_url": settings.MEDIA_URL,
         "same_products": same_products,
-        "basket": basket[0],
+        "basket": basket,
     }
     if pk:
         print(f"User select category: {pk}")
