@@ -23,7 +23,7 @@ def products(request, pk=None):
     basket = []
     if request.user.is_authenticated:
         basket = Basket.objects.filter(user=request.user)
-        
+       
         # or you can use this
         # _basket = request.user.basket.all()
         # print(f'basket / _basket: {len(_basket)} / {len(basket)}')
