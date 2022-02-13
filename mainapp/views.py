@@ -86,4 +86,4 @@ def product(request, pk):
         "basket": get_basket(request.user),
         "media_url": settings.MEDIA_URL,
     }
-    return render(request, "mainapp/product.html", content)    
+    return render(request, "mainapp/product.html", content)
