@@ -21,3 +21,4 @@ class ProductCategoryEditForm(forms.ModelForm):
     class Meta:
         model = ProductCategory
         fields = "__all__"
+
