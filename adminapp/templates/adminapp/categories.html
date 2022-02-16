@@ -6,7 +6,6 @@
     <button class="new_category">
         <a href={% url 'admin:category_create' %}>новая категория</a>
     </button>
-
     {% for object in objects %}
     <div class="category_record {% if not object.is_active %}not_active{% endif %}">
         <div class="category_name">
@@ -29,5 +28,4 @@
     </div>
     {% endfor %}
 </div>
-
 {% endblock %}
