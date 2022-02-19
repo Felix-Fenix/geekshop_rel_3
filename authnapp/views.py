@@ -1,9 +1,13 @@
+from re import T
 from django.conf import settings
 from django.contrib import auth
-from django.shortcuts import HttpResponseRedirect, render
+from django.shortcuts import HttpResponseRedirect, get_object_or_404, render
 from django.urls import reverse
 
 from authnapp.forms import ShopUserEditForm, ShopUserLoginForm, ShopUserRegisterForm
+from .utils import send_verify_mail
+from .models import ShopUser
+# from .forms import sa
 
 
 def login(request):
@@ -37,9 +41,13 @@ def register(request):
 
     if request.method == "POST":
         register_form = ShopUserRegisterForm(request.POST, request.FILES)
-
+        print('}}}}}}}}}}}')
         if register_form.is_valid():
-            register_form.save()
+            print(11111111111111111)
+            user = register_form.save()
+            print(user, '&&&&&&&&&&&&&&&&&&&&&')
+
+            send_verify_mail(user)
             return HttpResponseRedirect(reverse("auth:login"))
     register_form = ShopUserRegisterForm()
     content = {"title": title, "register_form": register_form}
@@ -57,3 +65,15 @@ def edit(request):
     edit_form = ShopUserEditForm(instance=request.user)
     content = {"title": title, "edit_form": edit_form, "media_url": settings.MEDIA_URL}
     return render(request, "authnapp/edit.html", content)
+
+
+def verify(request, email, activation_key):
+    print(email,'------', activation_key)
+    user = get_object_or_404(ShopUser, email=email)
+    print(user.activation_key, '+++++++')
+    if user.activation_key == activation_key:
+        
+        user.is_active = True
+        user.save()
+        auth.login(request, user)
+        return render(request, 'authnapp/verification.html')

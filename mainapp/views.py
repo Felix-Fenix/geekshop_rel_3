@@ -36,7 +36,7 @@ def get_same_products(hot_product):
 
 def products(request, pk=None, page=1):
     title = "продукты"
-    links_menu = ProductCategory.objects.filter(is_active=True)
+    # links_menu = ProductCategory.objects.filter(is_active=True)
     basket = get_basket(request.user)
 
     if pk is not None:
@@ -50,7 +50,6 @@ def products(request, pk=None, page=1):
                 "price"
             )
             print(products)
-        print(pk, '000000000000')
         paginator = Paginator(products, 2)
         try:
             products_paginator = paginator.page(page)
@@ -61,7 +60,7 @@ def products(request, pk=None, page=1):
 
         content = {
             "title": title,
-            "links_menu": links_menu,
+            # "links_menu": links_menu,
             "category": category,
             "products": products_paginator,
             "media_url": settings.MEDIA_URL,
@@ -72,7 +71,7 @@ def products(request, pk=None, page=1):
     same_products = get_same_products(hot_product)
     content = {
         "title": title,
-        "links_menu": links_menu,
+        # "links_menu": links_menu,
         "same_products": same_products,
         "media_url": settings.MEDIA_URL,
         "basket": basket,
@@ -85,7 +84,7 @@ def product(request, pk):
     title = "продукты"
     content = {
         "title": title,
-        "links_menu": ProductCategory.objects.filter(is_active=True),
+        # "links_menu": ProductCategory.objects.filter(is_active=True),
         "product": get_object_or_404(Product, pk=pk),
         "basket": get_basket(request.user),
         "media_url": settings.MEDIA_URL,

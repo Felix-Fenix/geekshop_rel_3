@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserChangeForm, UserCreationForm
 
 from .models import ShopUser
+import hashlib
+import os
 
 
 class ShopUserLoginForm(AuthenticationForm):
@@ -31,6 +33,14 @@ class ShopUserRegisterForm(UserCreationForm):
     class Meta:
         model = ShopUser
         fields = ("username", "first_name", "password1", "password2", "email", "age", "avatar")
+
+    def save(self):
+        user = super().save()
+        print(user.first_name)
+        user.is_active = False
+        user.activation_key = hashlib.md5(user.email.encode('utf-8') + os.urandom(64)).hexdigest()
+        user.save()
+        return user
 
 
 class ShopUserEditForm(UserChangeForm):

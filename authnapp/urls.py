@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 
 import authnapp.views as authnapp
 
@@ -9,4 +9,5 @@ urlpatterns = [
     path("logout/", authnapp.logout, name="logout"),
     path("register/", authnapp.register, name="register"),
     path("edit/", authnapp.edit, name="edit"),
+    re_path(r"^verify/(?P<email>.+)/(?P<activation_key>\w+)", authnapp.verify, name="verify")
 ]
