@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 
+import django
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -73,6 +75,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "mainapp.contex_link_menu_processor.links_menu",
+
             ],
         },
     },
@@ -146,3 +150,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # Set login path:
 #   https://docs.djangoproject.com/en/2.2/ref/settings/#login-url
 LOGIN_URL = "authnapp:login"
+
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = "tmp/emails"
+DOMAIN_NAME = "localhost"
+
+# EMAIL_HOST = "mail.ru"
+# EMAIL_PORT = 2025
+# EMAIL_USER = "merkava2016@bk.ru"
+# EMAIL_PASSWORD = "salamandra13071983"
+# EMAIL_USE_SSL = True
