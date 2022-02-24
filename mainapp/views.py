@@ -43,7 +43,7 @@ def products(request, pk=None, page=1):
         if pk == 0:
             category = {"pk": 0, "name": "все"}
             products = Product.objects.filter(is_active=True, category__is_active=True).order_by("price")
-            
+
         else:
             category = get_object_or_404(ProductCategory, pk=pk)
             products = Product.objects.filter(category__pk=pk, is_active=True, category__is_active=True).order_by(
