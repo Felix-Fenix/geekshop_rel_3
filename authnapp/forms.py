@@ -1,9 +1,10 @@
+import hashlib
+import os
+
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserChangeForm, UserCreationForm
 
-from .models import ShopUser
-import hashlib
-import os
+from .models import ShopUser, ShopUserProfile
 
 
 class ShopUserLoginForm(AuthenticationForm):
@@ -38,7 +39,7 @@ class ShopUserRegisterForm(UserCreationForm):
         user = super().save()
         print(user.first_name)
         user.is_active = False
-        user.activation_key = hashlib.md5(user.email.encode('utf-8') + os.urandom(64)).hexdigest()
+        user.activation_key = hashlib.md5(user.email.encode("utf-8") + os.urandom(64)).hexdigest()
         user.save()
         return user
 
@@ -60,3 +61,14 @@ class ShopUserEditForm(UserChangeForm):
     class Meta:
         model = ShopUser
         fields = ("username", "first_name", "email", "age", "avatar")
+
+
+class ShopUserProfileEditForm(forms.ModelForm):
+    class Meta:
+        model = ShopUserProfile
+        fields = ("tagline", "aboutMe", "gender")
+
+    def __init__(self, *args, **kwargs):
+        super(ShopUserProfileEditForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs["class"] = "form-control"

@@ -1,13 +1,15 @@
 from re import T
+
 from django.conf import settings
 from django.contrib import auth
+from django.db import transaction
 from django.shortcuts import HttpResponseRedirect, get_object_or_404, render
 from django.urls import reverse
 
-from authnapp.forms import ShopUserEditForm, ShopUserLoginForm, ShopUserRegisterForm
-from .utils import send_verify_mail
+from authnapp.forms import ShopUserEditForm, ShopUserLoginForm, ShopUserProfileEditForm, ShopUserRegisterForm
+
 from .models import ShopUser
-# from .forms import sa
+from .utils import send_verify_mail
 
 
 def login(request):
@@ -41,11 +43,9 @@ def register(request):
 
     if request.method == "POST":
         register_form = ShopUserRegisterForm(request.POST, request.FILES)
-        print('}}}}}}}}}}}')
         if register_form.is_valid():
-            print(11111111111111111)
             user = register_form.save()
-            print(user, '&&&&&&&&&&&&&&&&&&&&&')
+            print(user, "&&&&&&&&&&&&&&&&&&&&&")
 
             send_verify_mail(user)
             return HttpResponseRedirect(reverse("auth:login"))
@@ -54,26 +54,32 @@ def register(request):
     return render(request, "authnapp/register.html", content)
 
 
+@transaction.atomic
 def edit(request):
     title = "редактирование"
 
     if request.method == "POST":
         edit_form = ShopUserEditForm(request.POST, request.FILES, instance=request.user)
-        if edit_form.is_valid():
+        profile_form = ShopUserProfileEditForm(request.POST, instance=request.user.shopuserprofile)
+        if edit_form.is_valid() and profile_form.is_valid():
             edit_form.save()
             return HttpResponseRedirect(reverse("auth:edit"))
-    edit_form = ShopUserEditForm(instance=request.user)
-    content = {"title": title, "edit_form": edit_form, "media_url": settings.MEDIA_URL}
+    else:
+        edit_form = ShopUserEditForm(instance=request.user)
+        profile_form = ShopUserProfileEditForm(instance=request.user.shopuserprofile)
+
+    content = {"title": title, "edit_form": edit_form, "profile_form": profile_form}
+
     return render(request, "authnapp/edit.html", content)
 
 
 def verify(request, email, activation_key):
-    print(email,'------', activation_key)
+    print(email, "------", activation_key)
     user = get_object_or_404(ShopUser, email=email)
-    print(user.activation_key, '+++++++')
+    print(user.activation_key, "+++++++")
     if user.activation_key == activation_key:
-        
+
         user.is_active = True
         user.save()
-        auth.login(request, user)
-        return render(request, 'authnapp/verification.html')
+        auth.login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+        return render(request, "authnapp/verification.html")
